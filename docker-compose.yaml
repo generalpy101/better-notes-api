@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  elastic-search:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.7.1
+    ports:
+      - "9200:9200"
+    environment:
+      - ELASTIC_PASSWORD=$ELASTICSEARCH_PASSWORD
+    volumes:
+      - ./data:/var/lib/elasticsearch/data
+    healthcheck:
+      test: curl --silent --fail localhost:9200/_cat/health
+      interval: 30s
+      timeout: 30s
+      retries: 3
+
+  postgres:
+    image: postgres:13.4
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_DB=$POSTGRES_DB
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -U $POSTGRES_USER
+      interval: 30s
+      timeout: 30s
+      retries: 3
+  
+  migration:
+    build: ./db/migrations
+    command: alembic upgrade head
+    environment:
+      - DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+    depends_on:
+      - postgres
+  
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
+      - ELASTICSEARCH_URL=https://elastic-search:9200
+      - ELASTICSEARCH_PASSWORD=$ELASTICSEARCH_PASSWORD
+      - SECRET_KEY=$SECRET_KEY
+      - DEBUG=$DEBUG
+    depends_on:
+      - postgres
+      - elastic-search
+      - migration
+    healthcheck:
+      test: curl --silent --fail localhost:8080
+      interval: 30s
+      timeout: 30s
+      retries: 3
