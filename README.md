@@ -116,6 +116,8 @@ SECRET_KEY=secret
 
 ## API Reference
 
+<details>
+
 ### Authentication
 
 #### Get JWT auth and refresh tokens
@@ -176,6 +178,10 @@ _Response_
 ```
 
 Registers a new user to the platform.
+
+</details>
+
+<details>
 
 ### Notes
 
@@ -375,6 +381,9 @@ _Response_
     "status_code": 200
 }
 ```
+
+</details>
+
 ## Tech Stack
 
 **Server:** Python as Programming Language, Flask as Web Framework, SQLAlchemy as ORM
