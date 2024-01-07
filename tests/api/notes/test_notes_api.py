@@ -27,7 +27,9 @@ def test_get_note_by_id(client: FlaskClient, user_token: str):
 
 
 # Test the POST /api/notes endpoint
-def test_create_note_with_valid_data(client: FlaskClient, user_token: str, mock_elasticsearch):
+def test_create_note_with_valid_data(
+    client: FlaskClient, user_token: str, mock_elasticsearch
+):
     note = {
         "title": "Test",
         "content": "Test",
@@ -157,12 +159,7 @@ def test_search_notes(client: FlaskClient, user_token: str, mock_elasticsearch):
 
     # Return mocked search value
     mock_elasticsearch.search.return_value = {
-        "hits": {
-            "total": {"value": 1},
-            "hits": [
-                {"_id": "11"}
-            ]
-        }
+        "hits": {"total": {"value": 1}, "hits": [{"_id": "11"}]}
     }
 
     # Search for notes with "Hecker" in the content

@@ -53,9 +53,11 @@ def user_token(client):
     )
     return response.json.get("token")
 
+
 from unittest.mock import patch
+
 
 @pytest.fixture
 def mock_elasticsearch():
-    with patch('flask.current_app.elasticsearch', autospec=True) as mock_instance:
+    with patch("flask.current_app.elasticsearch", autospec=True) as mock_instance:
         yield mock_instance
