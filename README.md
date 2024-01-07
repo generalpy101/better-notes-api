@@ -118,6 +118,8 @@ SECRET_KEY=secret
 
 <details>
 
+  <summary>Authentication</summary>
+
 ### Authentication
 
 #### Get JWT auth and refresh tokens
@@ -182,6 +184,8 @@ Registers a new user to the platform.
 </details>
 
 <details>
+
+  <summary>Notes</summary>
 
 ### Notes
 
