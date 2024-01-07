@@ -54,7 +54,7 @@ def create_app(config_class=Config):
     jwt.init_app(app)
     ma.init_app(app)
 
-    if app.config.get("ELASTICSEARCH_URL"):
+    if app.config.get("ELASTICSEARCH_URL") is not None:
         logger.info("Elasticsearch URL found, connecting to cluster...")
         number_of_retries = 0
         while not check_elasticsearch_status(

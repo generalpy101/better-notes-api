@@ -38,6 +38,12 @@ services:
       - DATABASE_URL=postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@postgres:5432/$POSTGRES_DB
     depends_on:
       - postgres
+    
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    command: pytest -vvv
   
   api:
     build:
