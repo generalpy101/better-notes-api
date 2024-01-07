@@ -21,28 +21,6 @@ class NotesView(BaseView):
     put_schema = NotesUpdateSchema()
     model = Notes
 
-    # @jwt_required()
-    # def get(self, id=None):
-    #     try:
-    #         current_user = get_jwt_identity()
-    #         if id:
-    #             # Get note by id and user_id or if the note is shared with the user
-    #             obj = self.model.filter(
-    #                 self.model.id == id,
-    #                 or_(
-    #                     self.model.user_id == current_user,
-    #                     self.model.shared_users.any(Users.id == current_user)
-    #                 )
-    #             )
-    #             if not obj:
-    #                 return self.get_message_response(404, "Object not found")
-    #             return self.get_data_response(self.schema.dump(obj), 200)
-    #         else:
-    #             return super().get(id)
-    #     except Exception as e:
-    #         return self.handle_error(e)
-
-
 notes_view = NotesView.as_view("notes_view")
 notes_bp.add_url_rule(
     "/",
