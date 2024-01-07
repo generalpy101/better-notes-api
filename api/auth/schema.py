@@ -3,7 +3,7 @@ from api.server import ma
 from werkzeug.security import generate_password_hash
 
 
-class UserSchema(ma.SQLAlchemyAutoSchema):
+class UserSchema(ma.SQLAlchemySchema):
     class Meta:
         model = Users
 
