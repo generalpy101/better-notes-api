@@ -101,7 +101,7 @@ def create_app(config_class=Config):
         return APIErrorResponse(
             error=e.error_message,
             description=e.description,
-            error_type="Validation",
+            error_type="ValidationError",
             status_code=400,
         )
 

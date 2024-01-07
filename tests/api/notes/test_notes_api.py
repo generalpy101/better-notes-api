@@ -27,11 +27,14 @@ def test_get_note_by_id(client: FlaskClient, user_token: str):
 
 
 # Test the POST /api/notes endpoint
-def test_create_note_with_valid_data(client: FlaskClient, user_token: str):
+def test_create_note_with_valid_data(client: FlaskClient, user_token: str, mock_elasticsearch):
     note = {
         "title": "Test",
         "content": "Test",
     }
+
+    mock_elasticsearch.return_value = True
+
     response = client.post(
         BASE_URL,
         json=note,
@@ -57,12 +60,12 @@ def test_create_note_with_invalid_data(client: FlaskClient, user_token: str):
     )
 
     assert response.status_code == 400
-    assert response.json.get("error") == "Validation Error"
+    assert response.json.get("error") == "Schema validation error"
     assert (
         response.json.get("description")
         == "{'content': ['Missing data for required field.']}"
     )
-    assert response.json.get("error_type") == "MarshmallowValidationError"
+    assert response.json.get("error_type") == "ValidationError"
 
 
 # Test the PUT /api/notes/<id> endpoint
@@ -98,15 +101,18 @@ def test_update_note_with_invalid_data(client: FlaskClient, user_token: str):
     )
 
     assert response.status_code == 400
-    assert response.json.get("error") == "Validation Error"
+    assert response.json.get("error") == "Schema validation error"
     assert response.json.get("description") == "{'title': ['Not a valid string.']}"
-    assert response.json.get("error_type") == "MarshmallowValidationError"
+    assert response.json.get("error_type") == "ValidationError"
 
 
 # Test the DELETE /api/notes/<id> endpoint
-def test_delete_note_by_id(client: FlaskClient, user_token: str):
+def test_delete_note_by_id(client: FlaskClient, user_token: str, mock_elasticsearch):
     id_to_delete = 1
     note_url = f"{BASE_URL}{id_to_delete}/"
+
+    mock_elasticsearch.return_value = True
+
     response = client.delete(
         note_url,
         headers={"Authorization": f"Bearer {user_token}"},
@@ -128,22 +134,36 @@ def test_delete_note_by_invalid_id(client: FlaskClient, user_token: str):
     )
 
     assert response.status_code == 404
-    assert response.json.get("message") == "Object not found"
+    assert response.json.get("error") == "Object not found"
+    assert response.json.get("error_type") == "NotFound"
+    assert response.json.get("description") == f"Notes with id {id_to_delete} not found"
 
 
 # Test the GET /api/notes/search endpoint
-def test_search_notes(client: FlaskClient, user_token: str):
+def test_search_notes(client: FlaskClient, user_token: str, mock_elasticsearch):
     # Create new note to index it
     note = {
         "title": "Test",
         "content": "Hecker is good",
     }
 
+    mock_elasticsearch.return_value = True
+
     response = client.post(
         BASE_URL,
         json=note,
         headers={"Authorization": f"Bearer {user_token}"},
     )
+
+    # Return mocked search value
+    mock_elasticsearch.search.return_value = {
+        "hits": {
+            "total": {"value": 1},
+            "hits": [
+                {"_id": "11"}
+            ]
+        }
+    }
 
     # Search for notes with "Hecker" in the content
     search_url = f"{BASE_URL}search?q=Hecker"

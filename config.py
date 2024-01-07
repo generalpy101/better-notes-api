@@ -13,10 +13,11 @@ class Config(object):
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY") or "jwt-super-secret"
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ["access", "refresh"]
-    ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL")
+    ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL") or "http://localhost:9200"
     ELASTICSEARCH_USERNAME = os.environ.get("ELASTICSEARCH_USERNAME") or "elastic"
     ELASTICSEARCH_PASSWORD = os.environ.get("ELASTICSEARCH_PASSWORD") or "elastic"
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(basedir, "test.db")
+    ELASTICSEARCH_URL = None
